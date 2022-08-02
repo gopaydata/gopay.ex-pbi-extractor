@@ -499,7 +499,7 @@ class Component(ComponentBase):
                     print(f"groupID: {group_id}")
                     pass
 
-        def get_pbi_datasets_datasources(self):
+    def get_pbi_datasets_datasources(self):
         keys = [
             "datasource_type",
             "connection_details_server",
