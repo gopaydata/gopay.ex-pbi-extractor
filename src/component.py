@@ -499,9 +499,9 @@ class Component(ComponentBase):
                     "id": pd.get('id'),
                     "gateway_id": pd.get('gatewayId'),
                     "name": pd.get('name'),
-                    "type": pd.get('type)'),
-                    "public_key_exponent": pk_details.get('exponent'),
-                    "public_key_modulus": pk_details.get('modulus'),
+                    "type": pd.get('type'),
+                    "public_key_exponent": pk_details[0]['exponent'],
+                    "public_key_modulus": pk_details[0]['modulus'],
                     "gateway_annotation": str(gw[0])
                 }
             except AttributeError:
