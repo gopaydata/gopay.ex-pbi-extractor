@@ -490,11 +490,11 @@ class Component(ComponentBase):
 
         response = requests.get(url, headers=headers).json()
         pd = pandas.DataFrame.from_dict(response["value"])
-        pk_details = pd.get("publicKey")
-        gw = pd.get('gatewayAnnotation').to_dict()
-
+        
         if not pd.empty:
             try:
+                pk_details = pd.get("publicKey")
+                gw = pd.get('gatewayAnnotation').to_dict()
                 new_items = {
                     "id": pd.get('id'),
                     "gateway_id": pd.get('gatewayId'),
