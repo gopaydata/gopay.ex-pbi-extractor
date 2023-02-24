@@ -490,7 +490,7 @@ class Component(ComponentBase):
 
         response = requests.get(url, headers=headers).json()
         pd = pandas.DataFrame.from_dict(response["value"])
-        
+
         if not pd.empty:
             try:
                 pk_details = pd.get("publicKey")
