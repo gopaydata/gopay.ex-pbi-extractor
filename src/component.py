@@ -88,6 +88,7 @@ class Component(ComponentBase):
         response = requests.get(url, headers=headers).json()
 
         pd = pandas.DataFrame.from_dict(response['value'])
+        pd = pd[pd['type'] == 'Workspace']
         new_items = {
             "id": pd.get('id'),
             "name": pd.get('name'),
