@@ -811,6 +811,12 @@ class Component(ComponentBase):
 
                 except AttributeError:
                     pass
+                
+                except KeyError:
+                    error_message = response['error']['message']
+                    logging.error(f'KeyError: {error_message}')
+                    pass
+                
                 else:
 
                     if not pd_times.empty:
