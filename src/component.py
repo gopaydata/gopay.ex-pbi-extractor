@@ -7,9 +7,9 @@ from keboola.component.base import ComponentBase
 from keboola.component.exceptions import UserException
 
 # configuration variables
-KEY_CLIENT_ID = '#client_id'
+KEY_CLIENT_ID = 'client_id'
 KEY_PASSWORD = '#password'
-KEY_USERNAME = '#username'
+KEY_USERNAME = 'username'
 KEY_INCREMENTAL = 'incremental'
 
 # list of mandatory parameters => if some is missing,
@@ -813,10 +813,16 @@ class Component(ComponentBase):
                 except AttributeError:
                     pass
 
+
                 except KeyError:
-                    error_message = response['error']['message']
+                    error_message = (
+                        response.get('error', {}).get('message')
+                        if isinstance(response, dict) else str(response)
+                    )
+
                     logging.error(f'KeyError: {error_message}')
-                    pass
+                    return
+
 
                 else:
 

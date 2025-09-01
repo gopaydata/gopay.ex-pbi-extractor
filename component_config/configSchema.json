@@ -14,13 +14,13 @@
       "propertyOrder": 30,
       "description": "Power BI password"
     },
-    "#username": {
+    "username": {
       "type": "string",
       "title": "Username",
       "propertyOrder": 20,
       "description": "Power BI username"
     },
-    "#client_id": {
+    "client_id": {
       "type": "string",
       "title": "Client ID",
       "propertyOrder": 10
