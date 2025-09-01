@@ -813,7 +813,6 @@ class Component(ComponentBase):
                 except AttributeError:
                     pass
 
-
                 except KeyError:
                     error_message = (
                         response.get('error', {}).get('message')
@@ -822,7 +821,6 @@ class Component(ComponentBase):
 
                     logging.error(f'KeyError: {error_message}')
                     return
-
 
                 else:
 
