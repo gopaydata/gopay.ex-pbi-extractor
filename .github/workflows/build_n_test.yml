@@ -1,5 +1,9 @@
 name: Build & Test
-on: [ push ]
+on:
+  push:
+    # případně můžeš omezit třeba jen na main:
+    # branches: [ main ]
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
