@@ -1,98 +1,171 @@
-PBI extractor
-=============
+````md
+# GoPay Power BI Extractor
 
-Getting data from Power BI via API.
+Getting metadata and administration data from Power BI via REST API.
 
+---
 
-Functionality notes
-===================
+# Functionality Notes
 
-Prerequisites
-=============
+This component uses Azure AD Service Principal authentication (`client_credentials` OAuth2 flow) to access the Power BI REST API.
 
-Inputs required to update the access token:
+The component extracts information about:
 
-Client ID
+- Workspaces
+- Users
+- Datasets
+- Dashboards
+- Reports
+- Gateways
+- Datasources
+- Dataset refreshes
+- Dataset refresh schedules
 
-Power BI username
+---
 
-Power BI password
+# Prerequisites
 
-Features
-========
+Before using this extractor, create an Azure App Registration with:
 
+- Power BI Service API permissions
+- Client Secret
+- Tenant access enabled for Service Principals
 
+The Service Principal must also have access to the Power BI workspaces.
 
-===================
+Required configuration parameters:
 
-If you need more endpoints, please submit your request to
-[ideas.keboola.com](https://ideas.keboola.com/)
+| Parameter | Description |
+|---|---|
+| `client_id` | Azure Application (Client) ID |
+| `client_secret` | Azure Client Secret VALUE |
+| `tenant_id` | Azure Directory (Tenant) ID |
+| `incremental` | Enables incremental loading |
 
-Output
-======
+---
 
-<br>data\out\tables\pbi_dashboards.csv
-<br>data\out\tables\pbi_dashboards_refresh.csv
-<br>data\out\tables\pbi_datasets.csv
-<br>data\out\tables\pbi_datasets_refresh.csv
-<br>data\out\tables\pbi_datasets_datasources.csv
-<br>data\out\tables\pbi_datasets_refresh_schedule_days.csv
-<br>data\out\tables\pbi_datasets_refresh_schedule_enable.csv
-<br>data\out\tables\pbi_datasets_refresh_schedule_times.csv
-<br>data\out\tables\pbi_datasets_refreshes.csv
-<br>data\out\tables\pbi_datasources_gateway.csv
-<br>data\out\tables\pbi_gateways.csv
-<br>data\out\tables\pbi_groups.csv
-<br>data\out\tables\pbi_groups_refresh.csv
-<br>data\out\tables\pbi_reports.csv
-<br>data\out\tables\pbi_reports_actual.csv
-<br>data\out\tables\pbi_users.csv
+# Authentication
 
-Used APIs:
-=========
-https://login.microsoftonline.com/common/oauth2/token - refresh token to get data from Power BI
-https://api.powerbi.com/v1.0/myorg/groups
-https://api.powerbi.com/v1.0/myorg/groups/{groupId}/users
-https://api.powerbi.com/v1.0/myorg/groups/{groupId}/datasets
-https://api.powerbi.com/v1.0/myorg/groups/{groupId}/dashboards
-https://api.powerbi.com/v1.0/myorg/groups/{groupId}/reports
-https://api.powerbi.com/v1.0/myorg/gateways
-https://api.powerbi.com/v1.0/myorg/gateways/{gatewayId}/datasources
-https://api.powerbi.com/v1.0/myorg/groups/{group_id}/datasets/{dataset_id}/refreshes
-https://api.powerbi.com/v1.0/myorg/groups/{group_id}/datasets/{dataset_id}/datasources
-https://api.powerbi.com/v1.0/myorg/groups/{group_id}/datasets/{dataset_id}/refreshSchedule
+The component authenticates using OAuth2 Client Credentials flow.
 
-Development
------------
+Token endpoint:
 
-If required, change local data folder (the `CUSTOM_FOLDER` placeholder) path to
-your custom path in the `docker-compose.yml` file:
+```text
+https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token
+````
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    volumes:
-      - ./:/code
-      - ./CUSTOM_FOLDER:/data
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Request body:
 
-Clone this repository, init the workspace and run the component with following
-command:
+```text
+grant_type=client_credentials
+client_id=<client_id>
+client_secret=<client_secret>
+scope=https://analysis.windows.net/powerbi/api/.default
+```
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-git clone https://github.com/husic77/petr-husa.ex-pbi-extractor petr-husa.ex-pbi-extractor
-cd petr-husa.ex-pbi-extractor
+---
+
+# Features
+
+The component exports Power BI metadata into Keboola output tables.
+
+Supported entities:
+
+* Groups (Workspaces)
+* Workspace Users
+* Datasets
+* Dashboards
+* Reports
+* Gateways
+* Gateway Datasources
+* Dataset Datasources
+* Dataset Refreshes
+* Dataset Refresh Schedules
+
+---
+
+# Output
+
+Generated output tables:
+
+```text
+data/out/tables/pbi_dashboards.csv
+data/out/tables/pbi_dashboards_refresh.csv
+data/out/tables/pbi_datasets.csv
+data/out/tables/pbi_datasets_refresh.csv
+data/out/tables/pbi_datasets_datasources.csv
+data/out/tables/pbi_datasets_refresh_schedule_days.csv
+data/out/tables/pbi_datasets_refresh_schedule_enable.csv
+data/out/tables/pbi_datasets_refresh_schedule_times.csv
+data/out/tables/pbi_datasets_refreshes.csv
+data/out/tables/pbi_datasources_gateway.csv
+data/out/tables/pbi_gateways.csv
+data/out/tables/pbi_groups.csv
+data/out/tables/pbi_groups_refresh.csv
+data/out/tables/pbi_reports.csv
+data/out/tables/pbi_reports_actual.csv
+data/out/tables/pbi_users.csv
+```
+
+---
+
+# Used APIs
+
+Authentication:
+
+```text
+https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token
+```
+
+Power BI REST APIs:
+
+```text
+GET /v1.0/myorg/groups
+GET /v1.0/myorg/groups/{groupId}/users
+GET /v1.0/myorg/groups/{groupId}/datasets
+GET /v1.0/myorg/groups/{groupId}/dashboards
+GET /v1.0/myorg/groups/{groupId}/reports
+GET /v1.0/myorg/gateways
+GET /v1.0/myorg/gateways/{gatewayId}/datasources
+GET /v1.0/myorg/groups/{groupId}/datasets/{datasetId}/refreshes
+GET /v1.0/myorg/groups/{groupId}/datasets/{datasetId}/datasources
+GET /v1.0/myorg/groups/{groupId}/datasets/{datasetId}/refreshSchedule
+```
+
+---
+
+# Development
+
+If required, change local data folder path in `docker-compose.yml`:
+
+```yaml
+volumes:
+  - ./:/code
+  - ./CUSTOM_FOLDER:/data
+```
+
+Clone repository and run locally:
+
+```bash
+git clone https://github.com/gopaydata/gopay.ex-pbi-extractor gopay.ex-pbi-extractor
+cd gopay.ex-pbi-extractor
 docker-compose build
 docker-compose run --rm dev
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
-Run the test suite and lint check using this command:
+Run tests:
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```bash
 docker-compose run --rm test
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
-Integration
-===========
+---
 
-For information about deployment and integration with KBC, please refer to the
-[deployment section of developers
-documentation](https://developers.keboola.com/extend/component/deployment/)
+# Integration
+
+For deployment and Keboola integration documentation:
+
+https://developers.keboola.com/extend/component/deployment/
+
+```
+```
